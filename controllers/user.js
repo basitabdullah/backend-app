@@ -1,66 +1,46 @@
 import { User } from "../models/user.js";
+import bcrypt from "bcrypt";
+import { sendCookie } from "../utils/features.js";
 
-export const getAllUsers = async (req, res) => {
-  const users = await User.find({});
-  const keyword = req.query.keyword;
-  console.log(keyword);
+export const getAllUsers = async (req, res) => {};
 
-  res.json({
-    success: true,
-    users: users,
-  });
+export const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user)
+    return res.status(404).json({
+      success: false,
+      message: "Invalid Email or Password",
+    });
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch)
+    return res.status(404).json({
+      success: false,
+      message: "Invalid Email or Password",
+    });
+
+  sendCookie(user, res, `Welcome back ${user.name}`, 200);
 };
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
-  await User.create({
-    name: name,
-    email: email,
-    password: password,
-  });
 
-  res.status(201).cookie("tempi", "lol").json({
-    success: true,
-    message: "Registered!",
-  });
+  let user = await User.findOne({ email });
+
+  if (user)
+    return res.status(404).json({
+      success: false,
+      message: "User Already Exists",
+    });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  user = await User.create({ name, email, password: hashedPassword });
+  sendCookie(user, res, "Registered Successfully!", 201);
 };
 
-export const special = (req, res) => {
-  res.json({
-    status: true,
-    message: "Completed ---jus jokin",
-  });
-};
-
-export const getUserDetails = async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findById(id);
-  console.log(req.params);
-
-  res.json({
-    status: true,
-    user: user,
-  });
-};
-
-export const updateUser = async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findById(id);
-  console.log(req.params);
-
-  res.json({
-    status: true,
-    message: "Updated",
-  });
-};
-
-export const deleteUser = async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findById(id);
-  console.log(req.params);
-
-  res.json({
-    status: true,
-    message: "Deleted",
-  });
-};
+export const getUserDetails = async (req, res) => {};

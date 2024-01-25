@@ -1,12 +1,5 @@
 import express from "express";
-import {
-  deleteUser,
-  getAllUsers,
-  getUserDetails,
-  register,
-  special,
-  updateUser,
-} from "../controllers/user.js";
+import { getAllUsers, getUserDetails, login, register } from "../controllers/user.js";
 
 //creating router
 const router = express.Router();
@@ -17,16 +10,9 @@ router.get("/all", getAllUsers);
 //create user
 router.post("/new", register);
 
-//special
-router.get("/userid/special", special);
+router.post("/login", login);
 
 //dynamic routing
 router.get("/userid/:id", getUserDetails);
-
-//put request
-router.put("/userid/:id", updateUser);
-
-//del
-router.delete("/userid/:id", deleteUser);
 
 export default router;

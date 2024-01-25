@@ -1,18 +1,22 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
-    required: true,
-    },
-  email: {
-    type: String,
-    unique: true,
     required: true,
   },
-  password: {
+  decription: {
     type: String,
-    select: false,
+    required: true,
+  },
+  isCompleted: {
+    type: Boolean,
+    default: false,
+  },
+
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 
@@ -24,4 +28,4 @@ const schema = new mongoose.Schema({
 
 //collection creation
 //model name should be always capital
-export const User = mongoose.model("User", schema);
+export const Task = mongoose.model("Task", schema);

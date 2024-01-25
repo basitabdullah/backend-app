@@ -8,9 +8,10 @@ config({
 })
 
 //cant access request.body items without this middleware
-app.use(express.json());
+app.use(express.json());//keep it on the top
 
-app.use("/users", userRouter);
+//using routes
+app.use("/api/v1/users", userRouter);
 
 app.get("/", (req, res) => {
   res.send("nice working");
