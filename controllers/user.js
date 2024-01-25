@@ -1,5 +1,6 @@
 import { User } from "../models/user.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { sendCookie } from "../utils/features.js";
 
 export const getAllUsers = async (req, res) => {};
@@ -43,4 +44,23 @@ export const register = async (req, res) => {
   sendCookie(user, res, "Registered Successfully!", 201);
 };
 
-export const getUserDetails = async (req, res) => {};
+export const getMyProfile = async (req, res) => {
+  const id = "myid";
+
+  const { token } = req.cookies;
+
+  if (!token)
+    return res.status(404).json({
+      success: false,
+      message: "Login First",
+    });
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  const user = await User.findById(decoded._id);
+
+  res.status(200).json({
+    status: true,
+    user: user,
+  });
+};
