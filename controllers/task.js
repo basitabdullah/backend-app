@@ -1,3 +1,4 @@
+import ErrorHandler from "../middlewares/error.js";
 import { Task } from "../models/task.js";
 
 export const newTask = async (req, res) => {
@@ -28,10 +29,8 @@ export const updateTask = async (req, res) => {
   const id = req.params.id;
 
   const task = await Task.findById(id);
-  if(!task) return res.status(404).json({
-    status : false,
-    message:"Invalid Id"
-   })
+  if(!task) return next(new ErrorHandler("Task not found",404))
+
   task.isCompleted = !task.isCompleted;
   await task.save();
   res.status(201).json({
@@ -40,14 +39,11 @@ export const updateTask = async (req, res) => {
   });
 };
 
-export const deleteTask = async (req, res) => {
+export const deleteTask = async (req, res, next) => {
   const id = req.params.id;
 
   const task = await Task.findById(id);
- if(!task) return res.status(404).json({
-  status : false,
-  message:"Invalid Id"
- })
+ if(!task) return next(new ErrorHandler("Task not found",404))
   await task.deleteOne();
 
 
